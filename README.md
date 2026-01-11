@@ -7,7 +7,7 @@ Optional 8-head self-attention
 2-layer MLP refiner (very wide hidden size supported)
 Positive/negative blend strength
 
-Improves coherence, detail retention, mood consistency, and prompt following — especially powerful when stacked (first node glues scene, second sharpens/details).
+Improves coherence, detail retention, mood consistency, and prompt following.
 
 
 ## Installation
