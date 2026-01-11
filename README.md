@@ -8,7 +8,8 @@ Optional 8-head self-attention
 Positive/negative blend strength
 
 Improves coherence, detail retention, mood consistency, and prompt following — especially powerful when stacked (first node glues scene, second sharpens/details).
-Many users find this node so useful at low strength they remove CLIPAttentionMultiply entirely.
+
+
 ## Installation
 extract zip in ComfyUI/custom_nodes 
 
