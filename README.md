@@ -11,9 +11,10 @@ Improves coherence, detail retention, mood consistency, and prompt following —
 Many users find this node so useful at low strength they remove CLIPAttentionMultiply entirely.
 ## Installation
 extract zip in ComfyUI/custom_nodes 
+
 Or
 
-git clone https://github.com/capitan01R/ComfyUI-ConditioningEnhancer.git
+git clone https://github.com/capitan01R/Capitan-ConditioningEnhancer.git
 
 restart ComfyUI or reload custom nodes
 
