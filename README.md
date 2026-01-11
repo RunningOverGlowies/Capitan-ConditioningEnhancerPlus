@@ -1,57 +1,18 @@
-## Capitan Conditioning Enhancer
-Lightweight post-processing node for Qwen3-4B conditioning in Z-Image Turbo workflows.
-Refines the 2560-dim CONDITIONING from native Qwen3-4B text encoder with:
+<img width="323" height="275" alt="plus" src="https://github.com/user-attachments/assets/145146d0-b8b8-42fa-bc57-7e6f8879229c" />
 
-## Per-token normalization
-Optional 8-head self-attention
-2-layer MLP refiner (very wide hidden size supported)
-Positive/negative blend strength
+### **Key Improvements:**
+1.  **Added `seed`**: Now the random weights of the MLP and Attention layers are deterministic. You can reproduce your results.
+2.  **Exposed `attn_strength`**: No longer hardcoded to 0.3. You can control how much the tokens "talk" to each other.
+3.  **Added `clamp_range`**: Prevents the "rainbow artifacts" mentioned in the README by capping extreme values in the embedding.
+4.  **Added `noise_injection`**: Adds a tiny amount of controlled noise *before* processing to help break specific stuck patterns in Qwen models.
+5.  **Selectable Activation**: Choose between GELU, ReLU, or SiLU for different "flavors" of distortion.
 
-Improves coherence, detail retention, mood consistency, and prompt following.
+### **What changes for the user?**
 
-
-## Installation
-extract zip in ComfyUI/custom_nodes 
-
-Or
-
-git clone https://github.com/capitan01R/Capitan-ConditioningEnhancer.git
-
-restart ComfyUI or reload custom nodes
-
-No dependencies.
-## Placement
-After CLIP Text Encode (Prompt) → before KSampler.
-![](images/node.png)
-
-stack method:
-![](images/node2.png)
-
-### Parameters Explained
-
-| Parameter              | Type    | Default | Range             | What it does                                                                                       | Typical use / effect                                                                 |
-|------------------------|---------|---------|-------------------|----------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
-| enhance_strength       | FLOAT   | 0.0     | -2.0 → 2.0        | Positive: add refinement, Negative: subtract refinement (sharper, anti-smoothing)                | 0.00–0.15 = subtle polish<br>Negative = crisp/literal<br>>0.5 = high risk            |
-| normalize              | BOOLEAN | true    | true/false        | Per-token mean subtraction + unit variance normalization                                          | Almost always true — stability & cleaner generations                                 |
-| add_self_attention     | BOOLEAN | false   | true/false        | Light 8-head self-attention across tokens (distant prompt parts influence each other)            | true = better cohesion & complex scene unity<br>false = literal control              |
-| mlp_hidden_mult        | INT     | 2       | 1 → 100           | Hidden layer width multiplier for MLP (2560 → 2560×mult → 2560)                                  | 2–10 = balanced<br>20–50 = hyper-literal detail (recommended max)<br>60–100 = extreme (low strength only) |
-
-
-## MLP note — UI allows up to 100, but recommended max is 50. Higher rarely adds value and mostly increases artifact risk even at tiny strength (0.01–0.05).
-Recommended Starting Points
-Daily essential / stabilizer
-
-strength: 0.00–0.10
-normalize: true
-add_self_attention: true
-mlp_hidden_mult: 2–4
-
-Hyper-literal detail mode (stacked)
-
-First node: strength 0.05–0.10, normalize true, self-attn true, mult 2–4
-Second node: strength 0.05–0.15 (or -0.05 – -0.15), normalize true, self-attn false, mult 40–50
-
-Warnings
-High strength (>0.4) + high mlp_hidden_mult + self-attention → rainbow artifacts / noise likely.
-Very high mult (60+) needs extremely low strength (≤0.05).
-Always test same seed first. Negative strength + high mult usually safer than positive.
+1.  **Seed Control:** You can now connect a `Primitive` or standard `Seed` node to this. If you find a "Magic Enhancement" that creates amazing textures, you can keep the seed fixed while changing your prompt, and the *style of distortion* will remain consistent.
+2.  **Cleaner High Strength:** By using `clamp_output` (try setting it to `20.0` or `50.0`), you can push `enhance_strength` higher without the image turning into RGB static.
+3.  **Different "Moods":**
+    *   **GELU:** Smooth, modern AI look (Default).
+    *   **ReLU:** Sharper, harsher cutoffs in the embeddings.
+    *   **Tanh:** Softer, more "analog" saturation in the conditioning.
+4.  **Dithering:** The `noise_injection` parameter (try `0.05`) is excellent for Qwen. Large Qwen embeddings sometimes "collapse" into uniform patterns. Injecting noise prevents the sampler from getting stuck in local minima.
